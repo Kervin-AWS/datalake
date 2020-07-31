@@ -219,31 +219,31 @@ if __name__ == '__main__':
     faker = DataFaker()
     logger = Logs()
     logger.info("--version:0.0.1 datalake--")
-    # logger.info("start fake employee data")
-    # faker.employee_table()
-    # logger.info("finish fake employee data")
-    # logger.info("start fake level_tree data")
-    #
-    # faker.level_tree_table()
-    # logger.info("finish fake level_tree data")
-    # logger.info("start fake warehouse data")
-    #
-    # faker.warehouse_table()
-    # logger.info("finish fake warehouse data")
-    # logger.info("start fake city data")
-    #
-    # faker.city_table()
-    # logger.info("finish fake city data")
-    # logger.info("start fake product_view data")
-    #
-    # faker.product_view()
-    # logger.info("finish fake product_view data")
-    # logger.info("start fake product_detial data")
-    #
-    # faker.product_table()
-    #
-    # logger.info("finish fake product_detial data")
-    # logger.info("start fake sales data")
-    #
-    # faker.sales_table()
-    # logger.info("finish fake employee data")
+    logger.info("start fake employee data")
+    faker.employee_table()
+    logger.info("finish fake employee data")
+    logger.info("start fake level_tree data")
+
+    faker.level_tree_table()
+    logger.info("finish fake level_tree data")
+    logger.info("start fake warehouse data")
+
+    faker.warehouse_table()
+    logger.info("finish fake warehouse data")
+    logger.info("start fake city data")
+
+    faker.city_table()
+    logger.info("finish fake city data")
+    logger.info("start fake product_view data")
+
+    faker.product_view()
+    logger.info("finish fake product_view data")
+    logger.info("start fake product_detial data")
+
+    faker.product_table()
+
+    logger.info("finish fake product_detial data")
+    logger.info("start fake sales data")
+
+    faker.sales_table()
+    logger.info("finish fake employee data")
