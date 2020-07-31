@@ -132,11 +132,11 @@ class DataFaker:
     def sales_table(self):
         """
         创建销售表
-        初步确定1000w条销售记录
+        初步确定50000w条销售记录, 50g
         :return:
         """
         # 数据数量
-        data_size = 1000
+        data_size = 500000000
         fake_data = pd.DataFrame(columns=('order_id', 'item_id', 'create_time', 'employee_id',
                                           'customer_id', 'city_id', 'buy_amt'))
         for i in range(data_size):
@@ -162,7 +162,7 @@ class DataFaker:
         :return:
         """
         # 数据数量
-        data_size = 10
+        data_size = 500000000
         item_names = ['Pro_A', 'Pro_B', 'Pro_C', 'Pro_D', 'Pro_E', 'Pro_F', 'Pro_G', 'Pro_H', 'Pro_I', 'Pro_J']
         fake_data = pd.DataFrame(columns=('item_type_id', 'item_name', 'cost_amt'))
         for i in range(data_size):
@@ -180,6 +180,7 @@ class DataFaker:
         """
         产品维表
         10个产品
+        初步确定50000w条销售记录, 50g
         :return:
         """
         # 数据数量
