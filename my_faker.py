@@ -2,27 +2,17 @@ import pandas as pd
 from faker import Faker
 import boto3
 from boto3.session import Session
+from my_logs import Logs
+
 
 class DataFaker:
     def __init__(self):
         self.fake = Faker('zh_CN')
         self.data_dict = {}
         self.pt_profile = self.fake.profile()
-        self.session = Session("您的AccessKey", "您的SecretKey")
-        self.s3_client = Session.client('s3', endpoint_url="数据中心Endpoint")
+        # self.session = Session("您的AccessKey", "您的SecretKey")
+        # self.s3_client = Session.client('s3', endpoint_url="数据中心Endpoint")
         Faker.seed(0)
-
-    def fake_data(self):
-        pt_profile = self.fake.profile()
-        self.data_dict['FPATNO'] = f"{self.fake.pyint(15000, 17000):05}"
-        self.data_dict['ZYH'] = f"{self.fake.pyint(200, 350):05}"
-        self.data_dict['name'] = pt_profile['name']
-        self.data_dict['gender'] = pt_profile['sex']
-        self.data_dict['age'] = self.fake.pyint(15, 50)
-        self.data_dict['ruyuan'] = self.fake.past_datetime(start_date="-30d", tzinfo=None)
-        # self.data_dict['chuyuan'] = self.fake.past_datetime(start_date=self.data_dict['ruyuan'] + timedelta(days=1),
-        #                                                tzinfo=None)
-        print(self.data_dict)
 
     def employee_table(self):
         """
@@ -115,11 +105,11 @@ class DataFaker:
     def customer_table(self):
         """
         创建客户表
-        初步确定10w名客户
+        初步确定5000w名客户,4.8g
         :return:
         """
         # 客户人数
-        data_size = 1000
+        data_size = 50000000
         fake_data = pd.DataFrame(columns=('customer_id', 'customer_name', 'mail', 'address',
                                           'gender', 'create_time', 'city_id'))
         for i in range(data_size):
@@ -202,7 +192,6 @@ class DataFaker:
             warehouse_id = f"{self.fake.pyint(0, 9):05}"
             exist_state = self.fake.pyint(0, 1)
             item_type_id = f"{self.fake.pyint(0, 9):04}"
-            buy_amt = self.fake.pyint(5000, 10000)
             fake_data = fake_data.append(pd.DataFrame(
                 {'item_id': item_id, 'create_time': create_time, 'warehouse_id': warehouse_id,
                  'exist_state': exist_state,
@@ -219,16 +208,42 @@ class DataFaker:
         fake_data.to_csv('./data/' + 'city_table' + '.csv',
                          index=False, sep=',', header=True, encoding="utf_8_sig")
 
-    def upload_S3(self, filepath):
-        try:
-            self.s3_client.create_bucket(Bucket="您的bucket名", ACL = 'public-read')
-        finally:
-            print("")
+    # def upload_S3(self, filepath):
+    #     try:
+    #         self.s3_client.create_bucket(Bucket="您的bucket名", ACL = 'public-read')
+    #     finally:
+    #         print("")
 
 
 if __name__ == '__main__':
     faker = DataFaker()
-    faker.city_table()
-    # faker.sales_table()
+    logger = Logs()
+    logger.info("--version:0.0.1 datalake--")
+    # logger.info("start fake employee data")
+    # faker.employee_table()
+    # logger.info("finish fake employee data")
+    # logger.info("start fake level_tree data")
+    #
+    # faker.level_tree_table()
+    # logger.info("finish fake level_tree data")
+    # logger.info("start fake warehouse data")
+    #
+    # faker.warehouse_table()
+    # logger.info("finish fake warehouse data")
+    # logger.info("start fake city data")
+    #
+    # faker.city_table()
+    # logger.info("finish fake city data")
+    # logger.info("start fake product_view data")
+    #
     # faker.product_view()
+    # logger.info("finish fake product_view data")
+    # logger.info("start fake product_detial data")
+    #
     # faker.product_table()
+    #
+    # logger.info("finish fake product_detial data")
+    # logger.info("start fake sales data")
+    #
+    # faker.sales_table()
+    # logger.info("finish fake employee data")
