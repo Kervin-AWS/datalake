@@ -234,6 +234,10 @@ if __name__ == '__main__':
 
     faker.city_table()
     logger.info("finish fake city data")
+    logger.info("start fake customer_table data")
+
+    faker.customer_table()
+    logger.info("finish fake customer_table data")
     logger.info("start fake product_view data")
 
     faker.product_view()
