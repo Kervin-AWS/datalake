@@ -310,7 +310,7 @@ if __name__ == '__main__':
     faker = DataFaker(index)
     logger = Logs()
     logger.info("--version:0.0.2 datalake--")
-    if big_set == 1:
+    if big_set == '1':
         start_index = int(index) * (int(all_num) / 10)
         end_index = (int(index) + 1) * (int(all_num) / 10)
         logger.info("create Big_Set! from " + str(start_index) + " to " + str(start_index))
