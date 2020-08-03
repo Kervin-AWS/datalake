@@ -28,7 +28,7 @@ class DataFaker:
         """
         # 员工人数
         data_size = 1000
-        file_name = 'employee_table' + self.index + '.csv'
+        file_name = 'employee_table' + '.csv'
         file_path = './data/' + file_name
         if os.path.exists(file_path):
             os.remove(file_path)
@@ -71,6 +71,8 @@ class DataFaker:
         :return:
         """
         # hr_data = pd.read_csv('./data/employee_table.csv')
+        file_name = 'level_tree_table' + '.csv'
+        file_path = './data/' + file_name
         # 领导节点
         data_size = 1000
         fake_data = pd.DataFrame(columns=('employee_id', 'subordinate_id', 'subordinate_level'))
@@ -97,12 +99,16 @@ class DataFaker:
 
         fake_data.to_csv('./data/' + 'level_tree_table' + '.csv',
                          mode='a', index=False, sep=',', header=False, encoding="utf_8_sig")
+        self.create_bucket('kervin-datalake-datademo')
+        self.upload_file(file_path, 'kervin-datalake-datademo', file_name)
 
     def warehouse_table(self):
         """
         创建仓库表
         :return:
         """
+        file_name = 'warehouse_table' + '.csv'
+        file_path = './data/' + file_name
         data_size = 100
         fake_data = pd.DataFrame(columns=('warehouse_id', 'address', 'city_id', 'capacity',
                                           'max_capacity'))
@@ -118,6 +124,8 @@ class DataFaker:
 
         fake_data.to_csv('./data/' + 'warehouse_table' + '.csv',
                          mode='a', index=False, sep=',', header=False, encoding="utf_8_sig")
+        self.create_bucket('kervin-datalake-datademo')
+        self.upload_file(file_path, 'kervin-datalake-datademo', file_name)
 
     def customer_table(self, start, end):
         """
@@ -197,7 +205,9 @@ class DataFaker:
         10个产品
         :return:
         """
-        # 数据数量
+        file_name = 'product_view' + self.index + '.csv'
+        file_path = './data/' + file_name
+
         item_names = ['Pro_A', 'Pro_B', 'Pro_C', 'Pro_D', 'Pro_E', 'Pro_F', 'Pro_G', 'Pro_H', 'Pro_I', 'Pro_J']
         fake_data = pd.DataFrame(columns=('item_type_id', 'item_name', 'cost_amt'))
         for i in range(len(item_names)):
@@ -210,6 +220,8 @@ class DataFaker:
 
         fake_data.to_csv('./data/' + 'product_view' + '.csv',
                          mode='a', index=False, sep=',', header=False, encoding="utf_8_sig")
+        self.create_bucket('kervin-datalake-datademo')
+        self.upload_file(file_path, 'kervin-datalake-datademo', file_name)
 
     def product_table(self, start, end):
         """
@@ -246,12 +258,16 @@ class DataFaker:
         self.upload_file(file_path, 'kervin-datalake-datademo', file_name)
 
     def city_table(self):
+        file_name = 'city_table' + self.index + '.csv'
+        file_path = './data/' + file_name
         city_name = ['北京', '上海', '广州', '深圳', '合肥', '成都', '武汉', '石家庄', '海口', '太原', '福建']
         city_id = ['00000', '00001', '00002', '00003', '00004', '00005', '00006', '00007', '00008', '00009', '00010']
         list_of_tuples = list(zip(city_id, city_name))
         fake_data = pd.DataFrame(list_of_tuples, columns=['city_id', 'city_name'])
         fake_data.to_csv('./data/' + 'city_table' + '.csv',
                          mode='a', index=False, sep=',', header=False, encoding="utf_8_sig")
+        self.create_bucket('kervin-datalake-datademo')
+        self.upload_file(file_path, 'kervin-datalake-datademo', file_name)
 
     def create_bucket(self, bucket_name, region=None):
         """Create an S3 bucket in a specified region
@@ -313,7 +329,7 @@ if __name__ == '__main__':
     if big_set == '1':
         start_index = int(index) * int(int(all_num) / 10)
         end_index = (int(index) + 1) * int(int(all_num) / 10)
-        logger.info("create Big_Set! from " + str(start_index) + " to " + str(start_index))
+        logger.info("create Big_Set! from " + str(start_index) + " to " + str(end_index))
         logger.info("start fake customer_table data")
         customer_start_index = int(index) * int(int(customer_num) / 10)
         customer_end_index = (int(index) + 1) * int(int(customer_num) / 10)
