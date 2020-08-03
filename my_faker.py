@@ -1,8 +1,10 @@
 import pandas as pd
 from faker import Faker
-import boto3
-from boto3.session import Session
 from my_logs import Logs
+import os
+import logging
+import boto3
+from botocore.exceptions import ClientError
 
 
 class DataFaker:
@@ -23,9 +25,19 @@ class DataFaker:
         """
         # 员工人数
         data_size = 1000
-        fake_data = pd.DataFrame(columns=('employee_id', 'name', 'login', 'create_time',
-                                          'gender', 'level', 'state', 'bu_id', 'part_id',
-                                          'city_id'))
+        file_path = './data/' + 'employee_table' + '.csv'
+        if os.path.exists(file_path):
+            os.remove(file_path)
+            fake_data = pd.DataFrame(columns=('employee_id', 'name', 'login', 'create_time',
+                                              'gender', 'level', 'state', 'bu_id', 'part_id',
+                                              'city_id'))
+            fake_data.to_csv(file_path, index=False, sep=',', header=True, encoding="utf_8_sig")
+        else:
+            fake_data = pd.DataFrame(columns=('employee_id', 'name', 'login', 'create_time',
+                                              'gender', 'level', 'state', 'bu_id', 'part_id',
+                                              'city_id'))
+            fake_data.to_csv(file_path, index=False, sep=',', header=True, encoding="utf_8_sig")
+
         for i in range(data_size):
             employee_id = f"{i:08}"
             pt_profile = self.fake.profile()
@@ -38,13 +50,12 @@ class DataFaker:
             bu_id = f"{self.fake.pyint(0, 10):05}"
             part_id = f"{self.fake.pyint(0, 2):05}"
             city_id = f"{self.fake.pyint(0, 10):05}"
-            fake_data = fake_data.append(pd.DataFrame(
+            tmp_data = pd.DataFrame(
                 {'employee_id': employee_id, 'name': name, 'login': login, 'create_time': create_time,
                  'gender': gender, 'level': level, 'state': state, 'bu_id': bu_id,
-                 'part_id': part_id, 'city_id': city_id}, index=[0]), ignore_index=True)
+                 'part_id': part_id, 'city_id': city_id}, index=[0])
 
-        fake_data.to_csv('./data/' + 'employee_table' + '.csv',
-                         index=False, sep=',', header=True, encoding="utf_8_sig")
+            tmp_data.to_csv(file_path, mode='a', index=False, sep=',', header=False, encoding="utf_8_sig")
 
     def level_tree_table(self):
         """
@@ -79,7 +90,7 @@ class DataFaker:
                  'subordinate_level': subordinate_level}, index=[0]), ignore_index=True)
 
         fake_data.to_csv('./data/' + 'level_tree_table' + '.csv',
-                         index=False, sep=',', header=True, encoding="utf_8_sig")
+                         mode='a', index=False, sep=',', header=False, encoding="utf_8_sig")
 
     def warehouse_table(self):
         """
@@ -100,19 +111,27 @@ class DataFaker:
                  'capacity': capacity, 'max_capacity': max_capacity}, index=[0]), ignore_index=True)
 
         fake_data.to_csv('./data/' + 'warehouse_table' + '.csv',
-                         index=False, sep=',', header=True, encoding="utf_8_sig")
+                         mode='a', index=False, sep=',', header=False, encoding="utf_8_sig")
 
-    def customer_table(self):
+    def customer_table(self, start, end):
         """
         创建客户表
         初步确定5000w名客户,4.8g
         :return:
         """
         # 客户人数
-        data_size = 50000000
-        fake_data = pd.DataFrame(columns=('customer_id', 'customer_name', 'mail', 'address',
-                                          'gender', 'create_time', 'city_id'))
-        for i in range(data_size):
+        file_path = './data/' + 'customer_table' + '.csv'
+        if os.path.exists(file_path):
+            os.remove(file_path)
+            fake_data = pd.DataFrame(columns=('customer_id', 'customer_name', 'mail', 'address',
+                                              'gender', 'create_time', 'city_id'))
+            fake_data.to_csv(file_path, index=False, sep=',', header=True, encoding="utf_8_sig")
+        else:
+            fake_data = pd.DataFrame(columns=('customer_id', 'customer_name', 'mail', 'address',
+                                              'gender', 'create_time', 'city_id'))
+            fake_data.to_csv(file_path, index=False, sep=',', header=True, encoding="utf_8_sig")
+
+        for i in range(start, end):
             customer_id = f"{i:010}"
             pt_profile = self.fake.profile()
             customer_name = pt_profile['name']
@@ -121,25 +140,34 @@ class DataFaker:
             gender = pt_profile['sex']
             address = self.fake.address()
             city_id = f"{self.fake.pyint(0, 10):05}"
-            fake_data = fake_data.append(pd.DataFrame(
+            tmp_data = pd.DataFrame(
                 {'customer_id': customer_id, 'customer_name': customer_name, 'mail': mail, 'address': address,
                  'gender': gender, 'create_time': create_time,
-                 'city_id': city_id}, index=[0]), ignore_index=True)
+                 'city_id': city_id}, index=[0])
+            tmp_data.to_csv(file_path, mode='a', index=False, sep=',', header=False, encoding="utf_8_sig")
 
-        fake_data.to_csv('./data/' + 'customer_table' + '.csv',
-                         index=False, sep=',', header=True, encoding="utf_8_sig")
+        self.create_bucket('kervin-customer-table', 'us-east-1')
+        self.upload_file(file_path, 'kervin-customer-table')
 
-    def sales_table(self):
+    def sales_table(self, start, end):
         """
         创建销售表
         初步确定50000w条销售记录, 50g
         :return:
         """
         # 数据数量
-        data_size = 500000000
-        fake_data = pd.DataFrame(columns=('order_id', 'item_id', 'create_time', 'employee_id',
-                                          'customer_id', 'city_id', 'buy_amt'))
-        for i in range(data_size):
+        file_path = './data/' + 'sales_table' + '.csv'
+        if os.path.exists(file_path):
+            os.remove(file_path)
+            fake_data = pd.DataFrame(columns=('order_id', 'item_id', 'create_time', 'employee_id',
+                                              'customer_id', 'city_id', 'buy_amt'))
+            fake_data.to_csv(file_path, index=False, sep=',', header=True, encoding="utf_8_sig")
+        else:
+            fake_data = pd.DataFrame(columns=('order_id', 'item_id', 'create_time', 'employee_id',
+                                              'customer_id', 'city_id', 'buy_amt'))
+            fake_data.to_csv(file_path, index=False, sep=',', header=True, encoding="utf_8_sig")
+
+        for i in range(start, end):
             order_id = f"{i:015}"
             employee_id = f"{self.fake.pyint(0, 1000):08}"
             create_time = self.fake.date_between(start_date="-9y")
@@ -147,13 +175,11 @@ class DataFaker:
             customer_id = f"{self.fake.pyint(0, 10000000):010}"
             city_id = f"{self.fake.pyint(0, 10):05}"
             buy_amt = self.fake.pyint(5000, 10000)
-            fake_data = fake_data.append(pd.DataFrame(
+            tmp_data = pd.DataFrame(
                 {'order_id': order_id, 'item_id': item_id, 'create_time': create_time, 'employee_id': employee_id,
                  'customer_id': customer_id, 'city_id': city_id,
-                 'buy_amt': buy_amt}, index=[0]), ignore_index=True)
-
-        fake_data.to_csv('./data/' + 'sales_table' + '.csv',
-                         index=False, sep=',', header=True, encoding="utf_8_sig")
+                 'buy_amt': buy_amt}, index=[0])
+            tmp_data.to_csv(file_path, mode='a', index=False, sep=',', header=False, encoding="utf_8_sig")
 
     def product_view(self):
         """
@@ -162,10 +188,9 @@ class DataFaker:
         :return:
         """
         # 数据数量
-        data_size = 500000000
         item_names = ['Pro_A', 'Pro_B', 'Pro_C', 'Pro_D', 'Pro_E', 'Pro_F', 'Pro_G', 'Pro_H', 'Pro_I', 'Pro_J']
         fake_data = pd.DataFrame(columns=('item_type_id', 'item_name', 'cost_amt'))
-        for i in range(data_size):
+        for i in range(len(item_names)):
             item_type_id = f"{i:04}"
             item_name = item_names[i]
             cost_amt = self.fake.pyint(2000, 5000)
@@ -174,9 +199,9 @@ class DataFaker:
                  'cost_amt': cost_amt}, index=[0]), ignore_index=True)
 
         fake_data.to_csv('./data/' + 'product_view' + '.csv',
-                         index=False, sep=',', header=True, encoding="utf_8_sig")
+                         mode='a', index=False, sep=',', header=False, encoding="utf_8_sig")
 
-    def product_table(self):
+    def product_table(self, start, end):
         """
         产品维表
         10个产品
@@ -184,22 +209,28 @@ class DataFaker:
         :return:
         """
         # 数据数量
-        data_size = 1000
-        fake_data = pd.DataFrame(columns=('item_id', 'create_time', 'warehouse_id',
-                                          'exist_state', 'color_id', 'item_type_id'))
-        for i in range(data_size):
+        file_path = './data/' + 'product_table' + '.csv'
+        if os.path.exists(file_path):
+            os.remove(file_path)
+            fake_data = pd.DataFrame(columns=('item_id', 'create_time', 'warehouse_id',
+                                              'exist_state', 'color_id', 'item_type_id'))
+            fake_data.to_csv(file_path, index=False, sep=',', header=True, encoding="utf_8_sig")
+        else:
+            fake_data = pd.DataFrame(columns=('item_id', 'create_time', 'warehouse_id',
+                                              'exist_state', 'color_id', 'item_type_id'))
+            fake_data.to_csv(file_path, index=False, sep=',', header=True, encoding="utf_8_sig")
+
+        for i in range(start, end):
             item_id = f"{i:015}"
             create_time = self.fake.date_between(start_date="-9y")
             warehouse_id = f"{self.fake.pyint(0, 9):05}"
             exist_state = self.fake.pyint(0, 1)
             item_type_id = f"{self.fake.pyint(0, 9):04}"
-            fake_data = fake_data.append(pd.DataFrame(
+            tmp_data = pd.DataFrame(
                 {'item_id': item_id, 'create_time': create_time, 'warehouse_id': warehouse_id,
                  'exist_state': exist_state,
-                 'item_type_id': item_type_id}, index=[0]), ignore_index=True)
-
-        fake_data.to_csv('./data/' + 'product_table' + '.csv',
-                         index=False, sep=',', header=True, encoding="utf_8_sig")
+                 'item_type_id': item_type_id}, index=[0])
+            tmp_data.to_csv(file_path, mode='a', index=False, sep=',', header=False, encoding="utf_8_sig")
 
     def city_table(self):
         city_name = ['北京', '上海', '广州', '深圳', '合肥', '成都', '武汉', '石家庄', '海口', '太原', '福建']
@@ -207,48 +238,90 @@ class DataFaker:
         list_of_tuples = list(zip(city_id, city_name))
         fake_data = pd.DataFrame(list_of_tuples, columns=['city_id', 'city_name'])
         fake_data.to_csv('./data/' + 'city_table' + '.csv',
-                         index=False, sep=',', header=True, encoding="utf_8_sig")
+                         mode='a', index=False, sep=',', header=False, encoding="utf_8_sig")
 
-    # def upload_S3(self, filepath):
-    #     try:
-    #         self.s3_client.create_bucket(Bucket="您的bucket名", ACL = 'public-read')
-    #     finally:
-    #         print("")
+    def create_bucket(self, bucket_name, region=None):
+        """Create an S3 bucket in a specified region
+
+        If a region is not specified, the bucket is created in the S3 default
+        region (us-east-1).
+
+        :param bucket_name: Bucket to create
+        :param region: String region to create bucket in, e.g., 'us-west-2'
+        :return: True if bucket created, else False
+        """
+
+        # Create bucket
+        try:
+            if region is None:
+                s3_client = boto3.client('s3')
+                s3_client.create_bucket(Bucket=bucket_name)
+            else:
+                s3_client = boto3.client('s3', region_name=region)
+                location = {'LocationConstraint': region}
+                s3_client.create_bucket(Bucket=bucket_name,
+                                        CreateBucketConfiguration=location)
+        except ClientError as e:
+            logging.error(e)
+            return False
+        return True
+
+    def upload_file(self, file_name, bucket, object_name=None):
+        """Upload a file to an S3 bucket
+
+        :param file_name: File to upload
+        :param bucket: Bucket to upload to
+        :param object_name: S3 object name. If not specified then file_name is used
+        :return: True if file was uploaded, else False
+        """
+
+        # If S3 object_name was not specified, use file_name
+        if object_name is None:
+            object_name = file_name
+
+        # Upload the file
+        s3_client = boto3.client('s3')
+        try:
+            response = s3_client.upload_file(file_name, bucket, object_name)
+        except ClientError as e:
+            logging.error(e)
+            return False
+        return True
 
 
 if __name__ == '__main__':
     faker = DataFaker()
     logger = Logs()
     logger.info("--version:0.0.1 datalake--")
-    logger.info("start fake employee data")
-    faker.employee_table()
-    logger.info("finish fake employee data")
-    logger.info("start fake level_tree data")
-
-    faker.level_tree_table()
-    logger.info("finish fake level_tree data")
-    logger.info("start fake warehouse data")
-
-    faker.warehouse_table()
-    logger.info("finish fake warehouse data")
-    logger.info("start fake city data")
-
-    faker.city_table()
-    logger.info("finish fake city data")
-    logger.info("start fake customer_table data")
-
-    faker.customer_table()
+    # logger.info("start fake employee data")
+    # faker.employee_table()
+    # logger.info("finish fake employee data")
+    # logger.info("start fake level_tree data")
+    #
+    # faker.level_tree_table()
+    # logger.info("finish fake level_tree data")
+    # logger.info("start fake warehouse data")
+    #
+    # faker.warehouse_table()
+    # logger.info("finish fake warehouse data")
+    # logger.info("start fake city data")
+    #
+    # faker.city_table()
+    # logger.info("finish fake city data")
+    # logger.info("start fake customer_table data")
+    #
+    faker.customer_table(5000, 10000)
     logger.info("finish fake customer_table data")
-    logger.info("start fake product_view data")
-
-    faker.product_view()
-    logger.info("finish fake product_view data")
-    logger.info("start fake product_detial data")
-
-    faker.product_table()
-
-    logger.info("finish fake product_detial data")
-    logger.info("start fake sales data")
-
-    faker.sales_table()
-    logger.info("finish fake employee data")
+    # logger.info("start fake product_view data")
+    #
+    # faker.product_view()
+    # logger.info("finish fake product_view data")
+    # logger.info("start fake product_detial data")
+    #
+    # faker.product_table(5000, 10000)
+    #
+    # logger.info("finish fake product_detial data")
+    # logger.info("start fake sales data")
+    #
+    # faker.sales_table(5000, 10000)
+    # logger.info("finish fake employee data")
