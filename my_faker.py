@@ -205,7 +205,7 @@ class DataFaker:
         10个产品
         :return:
         """
-        file_name = 'product_view' + self.index + '.csv'
+        file_name = 'product_view' + '.csv'
         file_path = './data/' + file_name
 
         item_names = ['Pro_A', 'Pro_B', 'Pro_C', 'Pro_D', 'Pro_E', 'Pro_F', 'Pro_G', 'Pro_H', 'Pro_I', 'Pro_J']
@@ -258,7 +258,7 @@ class DataFaker:
         self.upload_file(file_path, 'kervin-datalake-datademo', file_name)
 
     def city_table(self):
-        file_name = 'city_table' + self.index + '.csv'
+        file_name = 'city_table' + '.csv'
         file_path = './data/' + file_name
         city_name = ['北京', '上海', '广州', '深圳', '合肥', '成都', '武汉', '石家庄', '海口', '太原', '福建']
         city_id = ['00000', '00001', '00002', '00003', '00004', '00005', '00006', '00007', '00008', '00009', '00010']
