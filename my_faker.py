@@ -147,7 +147,7 @@ class DataFaker:
             tmp_data.to_csv(file_path, mode='a', index=False, sep=',', header=False, encoding="utf_8_sig")
 
         self.create_bucket('kervin-customer-table')
-        self.upload_file(file_path, 'kervin-customer-table')
+        self.upload_file(file_path, 'kervin-customer-table', 'customer_table.csv')
 
     def sales_table(self, start, end):
         """
