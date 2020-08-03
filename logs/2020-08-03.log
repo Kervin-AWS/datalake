@@ -28,3 +28,15 @@
 [2020-08-03 14:07:33] [INFO] start fake employee data
 [2020-08-03 14:07:37] [INFO] Found credentials in shared credentials file: ~/.aws/credentials
 [2020-08-03 14:07:38] [ERROR] An error occurred (IllegalLocationConstraintException) when calling the CreateBucket operation: The unspecified location constraint is incompatible for the region specific endpoint this request was sent to.
+[2020-08-03 06:11:28] [INFO] --version:0.0.2 datalake--
+[2020-08-03 06:11:28] [INFO] create Small_Set!
+[2020-08-03 06:11:28] [INFO] start fake employee data
+[2020-08-03 06:11:32] [INFO] finish fake employee data
+[2020-08-03 06:11:32] [INFO] start fake level_tree data
+[2020-08-03 06:11:35] [INFO] finish fake level_tree data
+[2020-08-03 06:11:35] [INFO] start fake warehouse data
+[2020-08-03 06:11:35] [INFO] finish fake warehouse data
+[2020-08-03 06:11:35] [INFO] start fake city data
+[2020-08-03 06:11:35] [INFO] finish fake city data
+[2020-08-03 06:11:35] [INFO] start fake customer_table data
+[2020-08-03 06:11:35] [INFO] finish fake product_view data
