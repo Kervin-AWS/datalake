@@ -196,11 +196,25 @@ class DataFaker:
             customer_id = f"{self.fake.pyint(0, 10000000):010}"
             city_id = f"{self.fake.pyint(0, 10):05}"
             buy_amt = self.fake.pyint(5000, 10000)
-            tmp_data = pd.DataFrame(
-                {'order_id': order_id, 'item_id': item_id, 'create_time': create_time, 'employee_id': employee_id,
-                 'customer_id': customer_id, 'city_id': city_id,
-                 'buy_amt': buy_amt}, index=[0])
-            tmp_data.to_csv(file_path, mode='a', index=False, sep=',', header=False, encoding="utf_8_sig")
+            if i == start:
+                tmp_data = pd.DataFrame(
+                    {'order_id': order_id, 'item_id': item_id, 'create_time': create_time, 'employee_id': employee_id,
+                     'customer_id': customer_id, 'city_id': city_id,
+                     'buy_amt': buy_amt}, index=[0])
+            elif i % 1000 == 0 and i != start:
+                tmp_data.to_csv(file_path, mode='a', index=False, sep=',', header=False, encoding="utf_8_sig")
+                tmp_data = pd.DataFrame(
+                    {'order_id': order_id, 'item_id': item_id, 'create_time': create_time, 'employee_id': employee_id,
+                     'customer_id': customer_id, 'city_id': city_id,
+                     'buy_amt': buy_amt}, index=[0])
+            else:
+                tmp_data = tmp_data.append(pd.DataFrame(
+                    {'order_id': order_id, 'item_id': item_id, 'create_time': create_time, 'employee_id': employee_id,
+                     'customer_id': customer_id, 'city_id': city_id,
+                     'buy_amt': buy_amt}, index=[0]), ignore_index=True)
+        tmp_data.to_csv(file_path, mode='a', index=False, sep=',', header=False, encoding="utf_8_sig")
+
+
         self.create_bucket('kervin-datalake-datademo')
         self.upload_file(file_path, 'kervin-datalake-datademo', file_name)
 
@@ -254,11 +268,25 @@ class DataFaker:
             warehouse_id = f"{self.fake.pyint(0, 9):05}"
             exist_state = self.fake.pyint(0, 1)
             item_type_id = f"{self.fake.pyint(0, 9):04}"
-            tmp_data = pd.DataFrame(
-                {'item_id': item_id, 'create_time': create_time, 'warehouse_id': warehouse_id,
-                 'exist_state': exist_state,
-                 'item_type_id': item_type_id}, index=[0])
-            tmp_data.to_csv(file_path, mode='a', index=False, sep=',', header=False, encoding="utf_8_sig")
+            if i == start:
+                tmp_data = pd.DataFrame(
+                    {'item_id': item_id, 'create_time': create_time, 'warehouse_id': warehouse_id,
+                     'exist_state': exist_state,
+                     'item_type_id': item_type_id}, index=[0])
+                # tmp_data.to_csv(file_path, mode='a', index=False, sep=',', header=False, encoding="utf_8_sig")
+            elif i % 1000 == 0 and i != start:
+                tmp_data.to_csv(file_path, mode='a', index=False, sep=',', header=False, encoding="utf_8_sig")
+                tmp_data = pd.DataFrame(
+                    {'item_id': item_id, 'create_time': create_time, 'warehouse_id': warehouse_id,
+                     'exist_state': exist_state,
+                     'item_type_id': item_type_id}, index=[0])
+            else:
+                tmp_data = tmp_data.append(pd.DataFrame(
+                    {'item_id': item_id, 'create_time': create_time, 'warehouse_id': warehouse_id,
+                     'exist_state': exist_state,
+                     'item_type_id': item_type_id}, index=[0]), ignore_index=True)
+        tmp_data.to_csv(file_path, mode='a', index=False, sep=',', header=False, encoding="utf_8_sig")
+
         self.create_bucket('kervin-datalake-datademo')
         self.upload_file(file_path, 'kervin-datalake-datademo', file_name)
 
@@ -335,13 +363,13 @@ if __name__ == '__main__':
         start_index = int(index) * int(int(all_num) / 10)
         end_index = (int(index) + 1) * int(int(all_num) / 10)
         logger.info("create Big_Set! from " + str(start_index) + " to " + str(end_index))
-        logger.info("start fake customer_table data")
-        customer_start_index = int(index) * int(int(customer_num) / 10)
-        customer_end_index = (int(index) + 1) * int(int(customer_num) / 10)
-        faker.customer_table(customer_start_index, customer_end_index)
-        logger.info("finish fake customer_table data")
+        # logger.info("start fake customer_table data")
+        # customer_start_index = int(index) * int(int(customer_num) / 10)
+        # customer_end_index = (int(index) + 1) * int(int(customer_num) / 10)
+        # faker.customer_table(customer_start_index, customer_end_index)
+        # logger.info("finish fake customer_table data")
         logger.info("start fake product_table data")
-        faker.product_table(start_index, end_index)
+        # faker.product_table(start_index, end_index)
         logger.info("finish fake product_detial data")
         logger.info("start fake sales data")
         faker.sales_table(start_index, end_index)
