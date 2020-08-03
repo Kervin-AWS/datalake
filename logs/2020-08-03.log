@@ -18,3 +18,9 @@
 [2020-08-03 12:13:04] [INFO] --version:0.0.1 datalake--
 [2020-08-03 12:13:23] [INFO] Found credentials in shared credentials file: ~/.aws/credentials
 [2020-08-03 12:13:24] [ERROR] An error occurred (InvalidAccessKeyId) when calling the CreateBucket operation: The AWS Access Key Id you provided does not exist in our records.
+[2020-08-03 04:16:06] [INFO] --version:0.0.1 datalake--
+[2020-08-03 04:16:23] [ERROR] An error occurred (InvalidLocationConstraint) when calling the CreateBucket operation: The specified location-constraint is not valid
+[2020-08-03 04:19:14] [INFO] --version:0.0.1 datalake--
+[2020-08-03 04:19:29] [ERROR] An error occurred (InvalidLocationConstraint) when calling the CreateBucket operation: The specified location-constraint is not valid
+[2020-08-03 05:21:17] [INFO] --version:0.0.1 datalake--
+[2020-08-03 05:21:33] [INFO] finish fake customer_table data
