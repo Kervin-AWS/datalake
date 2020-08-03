@@ -18,6 +18,11 @@ class DataFaker:
         self.pt_profile = self.fake.profile()
         self.index = index
         Faker.seed(0)
+        logs_dir = "./data"
+        if os.path.exists(logs_dir) and os.path.isdir(logs_dir):
+            pass
+        else:
+            os.mkdir(logs_dir)
 
     def employee_table(self):
         """
