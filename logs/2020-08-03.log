@@ -24,3 +24,7 @@
 [2020-08-03 04:19:29] [ERROR] An error occurred (InvalidLocationConstraint) when calling the CreateBucket operation: The specified location-constraint is not valid
 [2020-08-03 05:21:17] [INFO] --version:0.0.1 datalake--
 [2020-08-03 05:21:33] [INFO] finish fake customer_table data
+[2020-08-03 14:07:33] [INFO] --version:0.0.2 datalake--
+[2020-08-03 14:07:33] [INFO] start fake employee data
+[2020-08-03 14:07:37] [INFO] Found credentials in shared credentials file: ~/.aws/credentials
+[2020-08-03 14:07:38] [ERROR] An error occurred (IllegalLocationConstraintException) when calling the CreateBucket operation: The unspecified location constraint is incompatible for the region specific endpoint this request was sent to.

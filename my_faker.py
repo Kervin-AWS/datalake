@@ -1,3 +1,6 @@
+"""
+
+"""
 import pandas as pd
 from faker import Faker
 from my_logs import Logs
@@ -5,15 +8,15 @@ import os
 import logging
 import boto3
 from botocore.exceptions import ClientError
+import sys
 
 
 class DataFaker:
-    def __init__(self):
+    def __init__(self, index):
         self.fake = Faker('zh_CN')
         self.data_dict = {}
         self.pt_profile = self.fake.profile()
-        # self.session = Session("您的AccessKey", "您的SecretKey")
-        # self.s3_client = Session.client('s3', endpoint_url="数据中心Endpoint")
+        self.index = index
         Faker.seed(0)
 
     def employee_table(self):
@@ -25,7 +28,8 @@ class DataFaker:
         """
         # 员工人数
         data_size = 1000
-        file_path = './data/' + 'employee_table' + '.csv'
+        file_name = 'employee_table' + self.index + '.csv'
+        file_path = './data/' + file_name
         if os.path.exists(file_path):
             os.remove(file_path)
             fake_data = pd.DataFrame(columns=('employee_id', 'name', 'login', 'create_time',
@@ -56,6 +60,8 @@ class DataFaker:
                  'part_id': part_id, 'city_id': city_id}, index=[0])
 
             tmp_data.to_csv(file_path, mode='a', index=False, sep=',', header=False, encoding="utf_8_sig")
+        self.create_bucket('kervin-datalake-datademo')                                       
+        self.upload_file(file_path, 'kervin-datalake-datademo', file_name)
 
     def level_tree_table(self):
         """
@@ -64,7 +70,7 @@ class DataFaker:
         其中领导40人
         :return:
         """
-        hr_data = pd.read_csv('./data/employee_table.csv')
+        # hr_data = pd.read_csv('./data/employee_table.csv')
         # 领导节点
         data_size = 1000
         fake_data = pd.DataFrame(columns=('employee_id', 'subordinate_id', 'subordinate_level'))
@@ -120,7 +126,8 @@ class DataFaker:
         :return:
         """
         # 客户人数
-        file_path = './data/' + 'customer_table' + '.csv'
+        file_name = 'customer_table' + self.index + '.csv'
+        file_path = './data/' + file_name                                    
         if os.path.exists(file_path):
             os.remove(file_path)
             fake_data = pd.DataFrame(columns=('customer_id', 'customer_name', 'mail', 'address',
@@ -146,8 +153,8 @@ class DataFaker:
                  'city_id': city_id}, index=[0])
             tmp_data.to_csv(file_path, mode='a', index=False, sep=',', header=False, encoding="utf_8_sig")
 
-        self.create_bucket('kervin-customer-table')
-        self.upload_file(file_path, 'kervin-customer-table', 'customer_table.csv')
+        self.create_bucket('kervin-datalake-datademo')
+        self.upload_file(file_path, 'kervin-datalake-datademo', file_name)
 
     def sales_table(self, start, end):
         """
@@ -156,7 +163,8 @@ class DataFaker:
         :return:
         """
         # 数据数量
-        file_path = './data/' + 'sales_table' + '.csv'
+        file_name = 'sales_table' + self.index + '.csv'
+        file_path = './data/' + file_name
         if os.path.exists(file_path):
             os.remove(file_path)
             fake_data = pd.DataFrame(columns=('order_id', 'item_id', 'create_time', 'employee_id',
@@ -180,6 +188,8 @@ class DataFaker:
                  'customer_id': customer_id, 'city_id': city_id,
                  'buy_amt': buy_amt}, index=[0])
             tmp_data.to_csv(file_path, mode='a', index=False, sep=',', header=False, encoding="utf_8_sig")
+        self.create_bucket('kervin-datalake-datademo')
+        self.upload_file(file_path, 'kervin-datalake-datademo', file_name)
 
     def product_view(self):
         """
@@ -209,7 +219,8 @@ class DataFaker:
         :return:
         """
         # 数据数量
-        file_path = './data/' + 'product_table' + '.csv'
+        file_name = 'product_table' + self.index + '.csv'
+        file_path = './data/' + file_name
         if os.path.exists(file_path):
             os.remove(file_path)
             fake_data = pd.DataFrame(columns=('item_id', 'create_time', 'warehouse_id',
@@ -231,6 +242,8 @@ class DataFaker:
                  'exist_state': exist_state,
                  'item_type_id': item_type_id}, index=[0])
             tmp_data.to_csv(file_path, mode='a', index=False, sep=',', header=False, encoding="utf_8_sig")
+        self.create_bucket('kervin-datalake-datademo')
+        self.upload_file(file_path, 'kervin-datalake-datademo', file_name)
 
     def city_table(self):
         city_name = ['北京', '上海', '广州', '深圳', '合肥', '成都', '武汉', '石家庄', '海口', '太原', '福建']
@@ -290,38 +303,46 @@ class DataFaker:
 
 
 if __name__ == '__main__':
-    faker = DataFaker()
+    big_set = sys.argv[1]
+    index = sys.argv[2]
+    all_num = sys.argv[3]
+    customer_num = sys.argv[4]
+    faker = DataFaker(index)
     logger = Logs()
-    logger.info("--version:0.0.1 datalake--")
-    # logger.info("start fake employee data")
-    # faker.employee_table()
-    # logger.info("finish fake employee data")
-    # logger.info("start fake level_tree data")
-    #
-    # faker.level_tree_table()
-    # logger.info("finish fake level_tree data")
-    # logger.info("start fake warehouse data")
-    #
-    # faker.warehouse_table()
-    # logger.info("finish fake warehouse data")
-    # logger.info("start fake city data")
-    #
-    # faker.city_table()
-    # logger.info("finish fake city data")
-    # logger.info("start fake customer_table data")
-    #
-    faker.customer_table(5000, 10000)
-    logger.info("finish fake customer_table data")
-    # logger.info("start fake product_view data")
-    #
-    # faker.product_view()
-    # logger.info("finish fake product_view data")
-    # logger.info("start fake product_detial data")
-    #
-    # faker.product_table(5000, 10000)
-    #
-    # logger.info("finish fake product_detial data")
-    # logger.info("start fake sales data")
-    #
-    # faker.sales_table(5000, 10000)
-    # logger.info("finish fake employee data")
+    logger.info("--version:0.0.2 datalake--")
+    if big_set == 1:
+        start_index = int(index) * (int(all_num) / 10)
+        end_index = (int(index) + 1) * (int(all_num) / 10)
+        logger.info("create Big_Set! from " + str(start_index) + " to " + str(start_index))
+        logger.info("start fake customer_table data")
+        customer_start_index = int(index) * (int(customer_num) / 10)
+        customer_end_index = (int(index) + 1) * (int(customer_num) / 10)
+        faker.customer_table(customer_start_index, customer_end_index)
+        logger.info("finish fake customer_table data")
+        logger.info("start fake product_table data")
+        faker.product_table(start_index, end_index)
+        logger.info("finish fake product_detial data")
+        logger.info("start fake sales data")
+        faker.sales_table(start_index, end_index)
+        logger.info("finish fake sales data")
+    else:
+        logger.info("create Small_Set!")
+        logger.info("start fake employee data")
+        faker.employee_table()
+        logger.info("finish fake employee data")
+        logger.info("start fake level_tree data")
+
+        faker.level_tree_table()
+        logger.info("finish fake level_tree data")
+        logger.info("start fake warehouse data")
+
+        faker.warehouse_table()
+        logger.info("finish fake warehouse data")
+        logger.info("start fake city data")
+
+        faker.city_table()
+        logger.info("finish fake city data")
+        logger.info("start fake customer_table data")
+
+        faker.product_view()
+        logger.info("finish fake product_view data")
