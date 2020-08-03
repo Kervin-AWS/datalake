@@ -369,7 +369,7 @@ if __name__ == '__main__':
         # faker.customer_table(customer_start_index, customer_end_index)
         # logger.info("finish fake customer_table data")
         logger.info("start fake product_table data")
-        # faker.product_table(start_index, end_index)
+        faker.product_table(start_index, end_index)
         logger.info("finish fake product_detial data")
         logger.info("start fake sales data")
         faker.sales_table(start_index, end_index)
